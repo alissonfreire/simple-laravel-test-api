@@ -1,0 +1,40 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main]
+
+jobs:
+  continuous-integration:
+    name: Check code quality and tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install Composer Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
+
+      - name: Run pint code analysis
+        run: vendor/bin/pint --test
+
+      - name: Run pint code analysis
+        run: vendor/bin/phpstan analyse
+
+      - name: Setup Test Database
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+          php artisan migrate:fresh --env=testing
+
+      - name: Execute tests (Unit and Feature tests)
+        run: php artisan test
