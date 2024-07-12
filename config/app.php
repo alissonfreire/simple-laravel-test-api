@@ -123,4 +123,18 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Wrong user password
+    |--------------------------------------------------------------------------
+    |
+    | This value is utilized by auth login in order to compare the password
+    | provided by the user with a valid hash in order to avoid comparing
+    | with null, thus invalidating user enumeration attacks. To generate
+    | this value, simply generate a hash of a random value, for example:
+    | $ php artisan tinker
+    | > Hash::make(Str::random(32))
+    |
+    */
+    'wrong_user_password' => env('WRONG_USER_PASSWORD'),
 ];
