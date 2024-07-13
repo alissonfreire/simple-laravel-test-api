@@ -65,7 +65,7 @@ class TodoRepository implements TodoRepositoryInterface
         $todo = $this->findById($id);
 
         if (! $todo) {
-            throw new NotFoundException("Todo doesn't exists");
+            throw new NotFoundException();
         }
 
         return $todo;
