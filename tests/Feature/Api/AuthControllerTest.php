@@ -207,7 +207,7 @@ class AuthControllerTest extends TestCase
         // Arrange
 
         // Act
-        $response = $this->get('/api/auth/me', headers: ['Accept' => 'application/json']);
+        $response = $this->get('/api/auth/me');
 
         // Assert
         $response->assertStatus(401);
@@ -231,7 +231,7 @@ class AuthControllerTest extends TestCase
         Sanctum::actingAs($user, []);
 
         // Act
-        $responseOne = $this->get('/api/auth/logout');
+        $responseOne = $this->delete('/api/auth/logout');
 
         // Assert
         $responseOne->assertNoContent(204);
