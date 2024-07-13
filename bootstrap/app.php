@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Responses\ApiResponse;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -19,11 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->is('api/*')) {
-                return response()->json([
-                    'status' => 'fail',
-                    'message' => 'unauthorized error',
-                    'errors' => [],
-                ], 401);
+                return ApiResponse::fail(errorMessage: 'unauthorized error', statusCode: 401);
             }
         });
     })->create();

@@ -2,6 +2,7 @@
 
 namespace App\Exceptions\Api;
 
+use App\Http\Responses\ApiResponse;
 use Exception;
 use Illuminate\Contracts\Validation\Validator;
 
@@ -13,10 +14,10 @@ class FormValidationException extends Exception
 
     public function render()
     {
-        return response()->json([
-            'status' => 'fail',
-            'errors' => $this->validator->errors()->toArray(),
-            'message' => 'form validation error',
-        ], $this->code);
+        return ApiResponse::fail(
+            errorMessage: 'form validation error',
+            errors: $this->validator->errors()->toArray(),
+            statusCode: $this->code
+        );
     }
 }

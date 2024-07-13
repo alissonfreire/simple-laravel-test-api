@@ -5,41 +5,41 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\AuthLoginRequest;
 use App\Http\Requests\Api\AuthRegisterRequest;
+use App\Http\Responses\ApiResponse;
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function register(AuthRegisterRequest $request): JsonResponse
+    public function register(AuthRegisterRequest $request): ApiResponse
     {
         $userData = $request->only(['name', 'email', 'password']);
 
         $responseData = $this->createUserWithToken($userData);
 
-        return response()->json(['status' => 'success', 'data' => $responseData], 201);
+        return ApiResponse::success(data: $responseData, statusCode: 201);
     }
 
-    public function login(AuthLoginRequest $request): JsonResponse
+    public function login(AuthLoginRequest $request): ApiResponse
     {
         $userData = $request->only(['name', 'email', 'password']);
 
         if (! $user = $this->maybeLogInUser($userData)) {
-            return response()->json(['status' => 'fail', 'message' => 'unauthorized error', 'errors' => []], 401);
+            return ApiResponse::fail(errorMessage: 'unauthorized error', statusCode: 401);
         }
 
         $responseData = $this->buildUserWithToken($user);
 
-        return response()->json(['status' => 'success', 'data' => $responseData], 200);
+        return ApiResponse::success($responseData);
     }
 
-    public function me(Request $request): JsonResponse
+    public function me(Request $request): ApiResponse
     {
-        $user = $request->user();
+        $responseData = ['user' => $request->user()];
 
-        return response()->json(['status' => 'success', 'data' => ['user' => $user]], 200);
+        return ApiResponse::success($responseData);
     }
 
     public function logout(Request $request): Response
