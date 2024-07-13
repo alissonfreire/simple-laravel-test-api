@@ -16,7 +16,6 @@ class EnsureApiHeaders
     public function handle(Request $request, Closure $next): Response
     {
         $request->headers->set('Accept', 'application/json', true);
-        $request->headers->set('Content-Type', 'application/json', true);
 
         return $next($request);
     }
