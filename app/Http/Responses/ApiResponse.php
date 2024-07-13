@@ -23,7 +23,7 @@ class ApiResponse implements Responsable
         $responseData = match ($this->status) {
             'fail' => ['message' => $this->errorMessage, 'errors' => $this->errors],
             'success' => ['data' => $this->data],
-            default => throw new InvalidArgumentException("Api response status value must be one of ['succes', 'fail']")
+            default => throw new InvalidArgumentException("Api response status value must be one of ['success', 'fail']")
         };
 
         $responseData = array_merge(['status' => $this->status], $responseData);
