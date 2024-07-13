@@ -1,0 +1,64 @@
+services:
+  app:
+    build:
+      dockerfile: ./Dockerfile
+    container_name: app
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+    links:
+      - db
+    depends_on:
+      - db
+    networks:
+      - backend
+
+  webserver:
+    image: nginx:alpine
+    container_name: webserver
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - app
+    networks:
+      - backend
+
+  db:
+    image: mysql:8.0
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: simple_test_api
+      MYSQL_USER: default
+      MYSQL_PASSWORD: secret
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - backend
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: db
+      MYSQL_USER: default
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root
+      MEMORY_LIMIT: 256M
+    ports:
+      - 8081:80
+    depends_on:
+      - db
+    networks:
+      - backend
+
+networks:
+  backend:
+
+volumes:
+  dbdata:

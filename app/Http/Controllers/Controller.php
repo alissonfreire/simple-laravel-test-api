@@ -10,7 +10,7 @@ use OpenApi\Attributes as OA;
     description: "An API for managing user's todos"
 )]
 #[OA\Server(
-    url: 'http://localhost:8000',
+    url: 'http://localhost',
     description: 'Simple Todo Rest API'
 )]
 
