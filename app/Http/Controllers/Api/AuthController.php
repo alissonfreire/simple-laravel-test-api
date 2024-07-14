@@ -15,75 +15,67 @@ use OpenApi\Attributes as OA;
 class AuthController extends Controller
 {
     #[OA\Post(
-        path: '/api/auth/register',
+        path: '/auth/register',
         summary: 'Register a new user',
         description: 'Creates a new user account with the provided details.',
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                required: ['name', 'email', 'password', 'password_confirmation'],
-                properties: [
-                    new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
-                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'johndoe@example.com'),
-                    new OA\Property(property: 'password', type: 'string', format: 'password', example: 'password123'),
-                    new OA\Property(property: 'password_confirmation', type: 'string', format: 'password', example: 'password123'),
-                ]
-            )
-        ),
-        responses: [
-            new OA\Response(
-                response: 201,
-                description: 'User registered successfully',
-                content: new OA\JsonContent(
+        tags: ['auth'],
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            required: ['name', 'email', 'password', 'password_confirmation'],
+            properties: [
+                new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
+                new OA\Property(property: 'email', type: 'string', format: 'email', example: 'johndoe@example.com'),
+                new OA\Property(property: 'password', type: 'string', format: 'password', example: 'password123'),
+                new OA\Property(property: 'password_confirmation', type: 'string', format: 'password', example: 'password123'),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 201,
+        description: 'User registered successfully',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'status', type: 'string', example: 'success'),
+                new OA\Property(
+                    property: 'data',
+                    type: 'object',
                     properties: [
-                        new OA\Property(property: 'status', type: 'string', example: 'success'),
+                        new OA\Property(property: 'user', type: 'object', ref: '#/components/schemas/User'),
+                    ]
+                ),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Form validation error',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'status', type: 'string', example: 'fail'),
+                new OA\Property(property: 'message', type: 'string', example: 'form validation error'),
+                new OA\Property(
+                    property: 'errors',
+                    type: 'object',
+                    properties: [
                         new OA\Property(
-                            property: 'data',
-                            type: 'object',
-                            properties: [
-                                new OA\Property(
-                                    property: 'user',
-                                    type: 'object',
-                                    properties: [
-                                        new OA\Property(property: 'id', type: 'integer', example: 1),
-                                        new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
-                                        new OA\Property(property: 'email', type: 'string', example: 'johndoe@example.com'),
-                                        new OA\Property(property: 'updated_at', type: 'string', format: 'date-time', example: '2024-07-13T02:01:20.000000Z'),
-                                        new OA\Property(property: 'created_at', type: 'string', format: 'date-time', example: '2024-07-13T02:01:20.000000Z'),
-                                    ]
-                                ),
-                            ]
+                            property: 'email',
+                            type: 'array',
+                            items: new OA\Items(type: 'string', example: 'The email field is required.')
+                        ),
+                        new OA\Property(
+                            property: 'password',
+                            type: 'array',
+                            items: new OA\Items(type: 'string', example: [
+                                'The password field confirmation does not match.',
+                                'The password field must be at least 8 characters.',
+                            ])
                         ),
                     ]
-                )
-            ),
-            new OA\Response(
-                response: 422,
-                description: 'Form validation error',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'status', type: 'string', example: 'fail'),
-                        new OA\Property(property: 'message', type: 'string', example: 'form validation error'),
-                        new OA\Property(
-                            property: 'errors',
-                            type: 'object',
-                            properties: [
-                                new OA\Property(
-                                    property: 'email',
-                                    type: 'array',
-                                    items: new OA\Items(type: 'string', example: 'The email field is required.')
-                                ),
-                                new OA\Property(
-                                    property: 'password',
-                                    type: 'array',
-                                    items: new OA\Items(type: 'string', example: ['The password field confirmation does not match.', 'The password field must be at least 8 characters.'])
-                                ),
-                            ]
-                        ),
-                    ]
-                )
-            ),
-        ]
+                ),
+            ]
+        )
     )]
     public function register(AuthRegisterRequest $request): ApiResponse
     {
@@ -95,60 +87,39 @@ class AuthController extends Controller
     }
 
     #[OA\Post(
-        path: '/api/auth/login',
+        path: '/auth/login',
         summary: 'Login a existent user',
         description: 'Login a existent user account with the provided credentials.',
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                required: ['email', 'password'],
-                properties: [
-                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'johndoe@example.com'),
-                    new OA\Property(property: 'password', type: 'string', format: 'password', example: 'password123'),
-                ]
-            )
-        ),
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'User logged successfully',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'status', type: 'string', example: 'success'),
-                        new OA\Property(
-                            property: 'data',
-                            type: 'object',
-                            properties: [
-                                new OA\Property(
-                                    property: 'user',
-                                    type: 'object',
-                                    properties: [
-                                        new OA\Property(property: 'id', type: 'integer', example: 1),
-                                        new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
-                                        new OA\Property(property: 'email', type: 'string', example: 'johndoe@example.com'),
-                                        new OA\Property(property: 'updated_at', type: 'string', format: 'date-time', example: '2024-07-13T02:01:20.000000Z'),
-                                        new OA\Property(property: 'created_at', type: 'string', format: 'date-time', example: '2024-07-13T02:01:20.000000Z'),
-                                    ]
-                                ),
-                                new OA\Property(property: 'token', type: 'string', example: '1|mY3jSgSPNSCdPoeds7xydX1UyblNXYqh22wpjW8o2814f842'),
-                            ]
-                        ),
-                    ]
-                )
-            ),
-            new OA\Response(
-                response: 401,
-                description: 'Unauthorized error',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'status', type: 'string', example: 'fail'),
-                        new OA\Property(property: 'message', type: 'string', example: 'unauthorized error'),
-                        new OA\Property(property: 'errors', type: 'array', items: new OA\Items(type: 'string'), example: []),
-                    ]
-                )
-            ),
-        ]
+        tags: ['auth'],
     )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            required: ['email', 'password'],
+            properties: [
+                new OA\Property(property: 'email', type: 'string', format: 'email', example: 'johndoe@example.com'),
+                new OA\Property(property: 'password', type: 'string', format: 'password', example: 'password123'),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'User successfully logged in',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'status', type: 'string', example: 'success'),
+                new OA\Property(
+                    property: 'data',
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'user', ref: '#/components/schemas/User'),
+                        new OA\Property(property: 'token', type: 'string', example: '1|mY3jSgSPNSCdPoeds7xydX1UyblNXYqh22wpjW8o2814f842'),
+                    ]
+                ),
+            ]
+        )
+    )]
+    #[OA\Response(response: 401, ref: '#/components/schemas/UnauthorizedResponse')]
     public function login(AuthLoginRequest $request): ApiResponse
     {
         $userData = $request->only(['name', 'email', 'password']);
@@ -164,39 +135,29 @@ class AuthController extends Controller
 
     #[OA\Get(
         security: [['bearerAuth' => []]],
-        path: '/api/auth/me',
+        path: '/auth/me',
         summary: 'Get logged in user details',
         description: 'Logs out the currently authenticated user.',
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'User registered successfully',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'status', type: 'string', example: 'success'),
-                        new OA\Property(
-                            property: 'data',
-                            type: 'object',
-                            properties: [
-                                new OA\Property(
-                                    property: 'user',
-                                    type: 'object',
-                                    properties: [
-                                        new OA\Property(property: 'id', type: 'integer', example: 1),
-                                        new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
-                                        new OA\Property(property: 'email', type: 'string', example: 'johndoe@example.com'),
-                                        new OA\Property(property: 'updated_at', type: 'string', format: 'date-time', example: '2024-07-13T02:01:20.000000Z'),
-                                        new OA\Property(property: 'created_at', type: 'string', format: 'date-time', example: '2024-07-13T02:01:20.000000Z'),
-                                    ]
-                                ),
-                                new OA\Property(property: 'token', type: 'string', example: '1|mY3jSgSPNSCdPoeds7xydX1UyblNXYqh22wpjW8o2814f842'),
-                            ]
-                        ),
-                    ]
-                )
-            ),
-        ]
+        tags: ['auth'],
     )]
+    #[OA\Response(
+        response: 200,
+        description: 'User registered successfully',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'status', type: 'string', example: 'success'),
+                new OA\Property(
+                    property: 'data',
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'user', type: 'object', ref: '#/components/schemas/User'),
+                        new OA\Property(property: 'token', type: 'string', example: '1|mY3jSgSPNSCdPoeds7xydX1UyblNXYqh22wpjW8o2814f842'),
+                    ]
+                ),
+            ]
+        )
+    )]
+    #[OA\Response(response: 401, ref: '#/components/schemas/UnauthorizedResponse')]
     public function me(Request $request): ApiResponse
     {
         $responseData = ['user' => $request->user()];
@@ -206,14 +167,12 @@ class AuthController extends Controller
 
     #[OA\Delete(
         security: [['bearerAuth' => []]],
-        path: '/api/auth/logout',
+        path: '/auth/logout',
         summary: 'Logout a user',
         description: 'Logs out the currently authenticated user.',
+        tags: ['auth'],
         responses: [
-            new OA\Response(
-                response: 204,
-                description: 'No content'
-            ),
+            new OA\Response(response: 204, description: 'No content'),
         ]
     )]
     public function logout(Request $request): Response
